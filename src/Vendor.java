@@ -50,6 +50,17 @@ class Vendor {
         else System.out.println("Sorry, don't know that item");
     }
 
+    /**
+     * Check the stock of the items in vendor
+     */
+    public int getStock(String name){
+        if (Stock.containsKey(name)) {
+            return Stock.get(name).stock;
+        } else {
+            return -1; //return -1 to show the item is not found
+        }
+    }
+
 }
 
 class Examples {
