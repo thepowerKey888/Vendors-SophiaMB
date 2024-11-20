@@ -59,6 +59,7 @@ class Vendor {
 
     /**
      * Check the stock of the items in vendor
+     * @param name
      */
     public int getStock(String name){
         if (Stock.containsKey(name)) {
@@ -67,6 +68,19 @@ class Vendor {
             return -1; //return -1 to show the item is not found
         }
     }
+
+    /** resets the Stock to given amount
+     * @param name
+     * @param amount */
+    public void restockItems(String name, int amount){
+        if (Stock.containsKey(name)) {
+            Item item = Stock.get(name);
+            item.restock(amount);
+        } else {
+            System.out.println("Item not found");
+        }
+    }
+
 
 }
 

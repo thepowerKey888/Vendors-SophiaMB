@@ -44,7 +44,13 @@ public class VendorTest {
 
         ven.select("Candy");
         Assertions.assertEquals(0, ven.getStock("Candy")); //check that stock doesn't decrease bellow 0
+    }
 
+    @Test //As a User, I would like to restock items on a vendor so players can buy from him later
+    public void restockTest(){
+
+        ven.restockItems("Candy", 10);
+        Assertions.assertEquals(15, ven.getStock("Candy"));
     }
 
 }
