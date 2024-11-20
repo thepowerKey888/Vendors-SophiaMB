@@ -49,8 +49,26 @@ public class VendorTest {
     @Test //As a User, I would like to restock items on a vendor so players can buy from him later
     public void restockTest(){
 
-        ven.restockItems("Candy", 10);
+        ven.restockItems("Candy", 0, 10);
         Assertions.assertEquals(15, ven.getStock("Candy"));
     }
+
+    /*
+    As a User, I would like items added to the vendor’s inventory when restocking if they were
+    unavailable so that the Vendor’s inventory can change over time
+     */
+    @Test
+    public void addItemsToVendorInventoryTest(){
+        Assertions.assertEquals(-1, ven.getStock("Soda")); //soda isn't in inventory
+        ven.restockItems("Soda", 1.50, 10); //restocknew item
+        Assertions.assertEquals(10, ven.getStock("Soda"));
+
+        //check if you can buy soda
+        ven.addMoney(2.00);
+        ven.select("Soda");
+        Assertions.assertEquals(9, ven.getStock("Soda")); //check stock decreases after buying it
+
+    }
+
 
 }

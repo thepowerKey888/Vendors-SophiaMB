@@ -69,15 +69,17 @@ class Vendor {
         }
     }
 
-    /** resets the Stock to given amount
+    /** resets the Stock to given amount and adds new items
      * @param name
-     * @param amount */
-    public void restockItems(String name, int amount){
+     * @param amount
+     * @param price */
+    public void restockItems(String name, double price, int amount){
         if (Stock.containsKey(name)) {
             Item item = Stock.get(name);
             item.restock(amount);
         } else {
-            System.out.println("Item not found");
+            Stock.put(name, new Item(price, amount));
+            System.out.println("Added new item: " + name);
         }
     }
 
