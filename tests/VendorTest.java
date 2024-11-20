@@ -29,6 +29,21 @@ public class VendorTest {
 
         Assertions.assertEquals(4, ven.getStock("Candy")); //check that stock decreases
         Assertions.assertEquals(3.75, ven.getBalance()); //check that balance was reduced correctly
+    }
+
+    @Test //Unit test to validate that you can empty the vendor’s inventory.
+    public void emptyVendorInventoryTest(){
+        ven.addMoney(10.00);
+
+        //buy candy 5 times
+        for (int i = 0; i < 5; i++){
+            ven.select("Candy");
+        }
+
+        Assertions.assertEquals(0, ven.getStock("Candy")); //check that stock is empty
+
+        ven.select("Candy");
+        Assertions.assertEquals(0, ven.getStock("Candy")); //check that stock doesn't decrease bellow 0
 
     }
 
