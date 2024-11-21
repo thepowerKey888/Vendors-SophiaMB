@@ -36,12 +36,24 @@ class Vendor {
     }
 
     /**
+     * Check the stock of the items in vendor
+     * @param name
+     */
+    public int getStock(String name){
+        if (Stock.containsKey(name)) {
+            return Stock.get(name).stock;
+        } else {
+            return -1; //return -1 to show the item is not found
+        }
+    }
+
+    /**
      * Gets the stock of an item for a specific vendor.
      * @param vendorName the name of the vendor
      * @param itemName the name of the item
      * @return stock amount (-1 if no stock)
      */
-    public int getStock(String vendorName, String itemName){
+    public int getStockOneVendor(String vendorName, String itemName){
         if(vendors.containsKey(vendorName)){
             HashMap<String, Item> stock = vendors.get(vendorName);
             if(stock.containsKey(itemName)){
@@ -76,6 +88,9 @@ class Vendor {
             HashMap<String, Item> stock = vendors.get(vendorName);
             if(stock.containsKey(itemName)){
                 stock.get(itemName).restock(amount);
+            } else {
+                // Add the item if it doesn't exist
+                stock.put(itemName, new Item(1.0, amount)); // Assuming a default price of 1.0 for new items
             }
         }
     }
@@ -97,55 +112,35 @@ class Vendor {
         this.balance = this.balance + amt;
     }
 
-    /** attempt to purchase named item.  Message returned if
+    /** attempt to purchase named item from a vendor.  Message returned if
      * the balance isn't sufficient to cover the item cost.
      *
-     * @param name The name of the item to purchase ("Candy" or "Gum")
+     * @param itemName The name of the item to purchase ("Candy" or "Gum")
+     * @param vendorName
      */
-    void select (String name) {
-        if (Stock.containsKey(name)) {
-            Item item = Stock.get(name);
-            if(item.stock <= 0){
-                System.out.println("Item no longer available");
+    void select(String vendorName, String itemName) {
+        if (vendors.containsKey(vendorName)) {
+            HashMap<String, Item> stock = vendors.get(vendorName);
+            if (stock.containsKey(itemName)) {
+                Item item = stock.get(itemName);
+
+                if (item.stock <= 0) {
+                    System.out.println("Item no longer available");
+                } else if (balance >= item.price) {
+                    item.purchase(1);
+                    this.balance = this.balance - item.price;
+                    System.out.println("Purchased " + itemName + " from " + vendorName);
+                } else {
+                    System.out.println("Gimme more money");
+                }
+            } else {
+                System.out.println("Sorry, vendor doesn't have that item");
             }
-
-            else if (balance >= item.price) {
-                item.purchase(1);
-                this.balance = this.balance - item.price;
-            }
-
-
-            else
-                System.out.println("Gimme more money");
-        }
-        else System.out.println("Sorry, don't know that item");
-    }
-
-    /**
-     * Check the stock of the items in vendor
-     * @param name
-     */
-    public int getStock(String name){
-        if (Stock.containsKey(name)) {
-            return Stock.get(name).stock;
         } else {
-            return -1; //return -1 to show the item is not found
+            System.out.println("Sorry, vendor " + vendorName + " not found");
         }
     }
 
-    /** resets the Stock to given amount and adds new items
-     * @param name
-     * @param amount
-     * @param price */
-    public void restockItems(String name, double price, int amount){
-        if (Stock.containsKey(name)) {
-            Item item = Stock.get(name);
-            item.restock(amount);
-        } else {
-            Stock.put(name, new Item(price, amount));
-            System.out.println("Added new item: " + name);
-        }
-    }
 
     /**change name of an item in the stock.
      * @param curName current name of item
@@ -169,6 +164,37 @@ class Vendor {
     }
 
 
+
+    /**
+     * Removes an item from a vendor's inventory if it is not available
+     * and handles the case where itemName is null or the item does not exist in the vendor
+     * @param vendorName name of vendor
+     * @param itemName name of item to remove
+     * @return message result
+     */
+    public String removeUnavailableItem(String vendorName, String itemName){
+        if(vendorName == null || itemName == null || vendorName.trim().isEmpty() || itemName.trim().isEmpty()){
+            return "Vendor name or item name cannot be null or empty";
+        }
+
+        if(!vendors.containsKey(vendorName)){
+            return "Vendor not found";
+        }
+
+        HashMap<String, Item> stock = vendors.get(vendorName);
+
+        if(!stock.containsKey(itemName)){
+            return "Item not found in vendor's inventory";
+        }
+
+        Item item = stock.get(itemName);
+        if(item.stock == 0){
+            stock.remove(itemName);
+            return "Item removed from vendor's inventory";
+        } else{
+            return "Item is still in stock";
+        }
+    }
 }
 
 class Examples {
