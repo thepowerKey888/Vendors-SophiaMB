@@ -8,12 +8,76 @@ import java.util.HashMap;
 class Vendor {
     private static HashMap<String, Item> Stock = new HashMap<String,Item>();
     private double balance;
+    private static HashMap<String, HashMap<String, Item>> vendors = new HashMap<>();
 
 
     Vendor(int numCandy, int numGum) {
         Stock.put("Candy", new Item(1.25, numCandy));
         Stock.put("Gum", new Item(.5, numGum));
         this.balance = 0;
+    }
+
+    /*
+    As a User, I would like for the vendor system to manage
+    and print the inventory of 5 different vendors so that
+    I can have multiple vendors available
+     */
+    /**
+     * Adds a new vendor with initial stock of candy and gum.
+     * @param vendorName name of vendor
+     * @param numCandy initial stock of candy
+     * @param numGum initial stock of gum
+     */
+    public void addVendor(String vendorName, int numCandy, int numGum){
+        HashMap<String, Item> stock = new HashMap<>();
+        stock.put("Candy", new Item(1.25, numCandy));
+        stock.put("Gum", new Item(0.50, numGum));
+        vendors.put(vendorName, stock);
+    }
+
+    /**
+     * Gets the stock of an item for a specific vendor.
+     * @param vendorName the name of the vendor
+     * @param itemName the name of the item
+     * @return stock amount (-1 if no stock)
+     */
+    public int getStock(String vendorName, String itemName){
+        if(vendors.containsKey(vendorName)){
+            HashMap<String, Item> stock = vendors.get(vendorName);
+            if(stock.containsKey(itemName)){
+                return stock.get(itemName).stock;
+            }
+        }
+        return -1; //if vendor or item is not found
+    }
+
+    /**
+     * Prints the inventory of all vendors.
+     */
+    public void printAllInventories(){
+        for(String vendorName : vendors.keySet()){
+            System.out.println("vendor: "+vendorName);
+            HashMap<String, Item> stock = vendors.get(vendorName);
+            for(String itemName : stock.keySet()){
+                System.out.println(itemName + " stock: "+stock.get(itemName).stock);
+            }
+            System.out.println("");
+        }
+    }
+
+    /**
+     * restocks items for a specific vendor
+     * @param vendorName name of vendor
+     * @param itemName name of the item
+     * @param amount to restock
+     */
+    public void restockItems(String vendorName, String itemName, int amount){
+        if(vendors.containsKey(vendorName)){
+            HashMap<String, Item> stock = vendors.get(vendorName);
+            if(stock.containsKey(itemName)){
+                stock.get(itemName).restock(amount);
+            }
+        }
     }
 
     /** resets the Balance to 0 */
@@ -103,6 +167,8 @@ class Vendor {
         Stock.put(newName, item);
         return "Item name changed";
     }
+
+
 }
 
 class Examples {

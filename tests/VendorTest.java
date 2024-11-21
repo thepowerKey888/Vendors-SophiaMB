@@ -9,8 +9,36 @@ public class VendorTest {
 
     @BeforeEach
     public void setUp(){
+
         ven = new Vendor(5, 5);
+
+        ven.addVendor("Ven1", 5, 10);
+        ven.addVendor("Ven2", 8, 15);
+        ven.addVendor("Ven3", 20, 5);
+
     }
+    /*
+    As a User, I would like for the vendor system to manage and print the inventory of 5
+    different vendors so that I can have multiple vendors available
+     */
+    @Test void testVendorInventory(){
+
+        //check stock of ven1
+        Assertions.assertEquals(5, ven.getStock("Ven1", "Candy"));
+        Assertions.assertEquals(10, ven.getStock("Ven1", "Gum"));
+
+        //restock Ven1 candy
+        ven.restockItems("Ven1", "Candy", 10);
+        Assertions.assertEquals(15, ven.getStock("Ven1", "Candy"));
+
+        //check stock of Ven2
+        Assertions.assertEquals(8, ven.getStock("Ven2", "Candy"));
+        Assertions.assertEquals(15, ven.getStock("Ven2", "Gum"));
+
+        //print all inventories
+        ven.printAllInventories();
+    }
+
     @Test
     void addition() {
         assertEquals(2, 1 + 1);
