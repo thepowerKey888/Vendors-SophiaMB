@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -10,6 +11,8 @@ class Vendor {
     private double balance;
     private static HashMap<String, HashMap<String, Item>> vendors = new HashMap<>();
 
+
+    HashMap<String, Integer> allItems = new HashMap<>();
 
     Vendor(int numCandy, int numGum) {
         Stock.put("Candy", new Item(1.25, numCandy));
@@ -64,17 +67,28 @@ class Vendor {
     }
 
     /**
-     * Prints the inventory of all vendors.
+     * Prints the inventory of all vendors and records the items each vendor has in stock.
      */
     public void printAllInventories(){
+
+        //loop through vendors
         for(String vendorName : vendors.keySet()){
-            System.out.println("vendor: "+vendorName);
+            System.out.println("vendor: " + vendorName);
             HashMap<String, Item> stock = vendors.get(vendorName);
+
+            //add items to hashmap
             for(String itemName : stock.keySet()){
-                System.out.println(itemName + " stock: "+stock.get(itemName).stock);
+                allItems.putIfAbsent(itemName, 0);
+                System.out.println(itemName + " stock: " + stock.get(itemName).stock);
             }
             System.out.println("");
         }
+
+        //print unique items that have been encountered across all vendors
+//        System.out.println("All Unique Items:");
+//        for (String item : allItems.keySet()) {
+//            System.out.println(item + " has been encountered.");
+//        }
     }
 
     /**
@@ -112,11 +126,12 @@ class Vendor {
         this.balance = this.balance + amt;
     }
 
-    /** attempt to purchase named item from a vendor.  Message returned if
+    /**
+     * Attempt to purchase the named item from a vendor. A message is returned if
      * the balance isn't sufficient to cover the item cost.
      *
      * @param itemName The name of the item to purchase ("Candy" or "Gum")
-     * @param vendorName
+     * @param vendorName The vendor from which to purchase the item
      */
     void select(String vendorName, String itemName) {
         if (vendors.containsKey(vendorName)) {
@@ -130,6 +145,13 @@ class Vendor {
                     item.purchase(1);
                     this.balance = this.balance - item.price;
                     System.out.println("Purchased " + itemName + " from " + vendorName);
+
+                    //update allItems hashmap item value
+                    if (allItems.containsKey(itemName)) {
+                        allItems.put(itemName, allItems.get(itemName) + 1);
+                    } else {
+                        allItems.put(itemName, 1);  //if the item doesn't exist set its count to 1
+                    }
                 } else {
                     System.out.println("Gimme more money");
                 }
@@ -142,24 +164,46 @@ class Vendor {
     }
 
 
-    /**change name of an item in the stock.
-     * @param curName current name of item
+    /**
+     * Change the name of an item in the stock and update the allItems hashmap.
+     * @param curName current name of the item
      * @param newName new name to change
+     * @return a message indicating the result of the operation
      */
-    public String changeItemName(String curName, String newName){
-        if(newName == null || newName.trim().isEmpty()){
+    public String changeItemName(String vendorName, String curName, String newName) {
+        // Check if the new name is valid
+        if (newName == null || newName.trim().isEmpty()) {
             return "New name can't be empty or null";
         }
-        if(!Stock.containsKey(curName)){
-            return "item to change is not found in stock";
-        }
-        if(Stock.containsKey(newName)){
-            return "An item with the new name already exists";
+
+        // Check if the vendor exists
+        if (!vendors.containsKey(vendorName)) {
+            return "Vendor not found";
         }
 
-        //changes the name
-        Item item = Stock.remove(curName);
-        Stock.put(newName, item);
+        // Get the vendor's stock
+        HashMap<String, Item> stock = vendors.get(vendorName);
+
+        // Check if the item exists in the vendor's stock
+        if (!stock.containsKey(curName)) {
+            return "Item to change is not found in the vendor's stock";
+        }
+
+        // Check if the new name already exists in the vendor's stock
+        if (stock.containsKey(newName)) {
+            return "An item with the new name already exists in the vendor's stock";
+        }
+
+        // Change the item name in the vendor's stock
+        Item item = stock.remove(curName);
+        stock.put(newName, item);
+
+        // Update the allItems map (if needed)
+        if (allItems.containsKey(curName)) {
+            Integer value = allItems.remove(curName);
+            allItems.put(newName, value);
+        }
+
         return "Item name changed";
     }
 
@@ -194,6 +238,35 @@ class Vendor {
         } else{
             return "Item is still in stock";
         }
+    }
+
+    /**
+     * Gets the keys and values of the allItems hashmap, representing the purchases made by the customer.
+     * Displays the most popular item (the one with the highest purchase count).
+     *
+     * @return A string representing the customer purchases and their counts, along with the most popular item
+     */
+    public String getCustomerPurchases() {
+        printAllInventories(); //gets all the items
+        StringBuilder purchases = new StringBuilder("Customer Purchases:\n");
+        String mostPopularItem = "";
+        int maxPurchaseCount = 0;
+
+        for (Map.Entry<String, Integer> entry : allItems.entrySet()) {
+            String itemName = entry.getKey();
+            Integer purchaseCount = entry.getValue();
+            purchases.append(itemName + ": " + purchaseCount + " times\n");
+
+            if (purchaseCount > maxPurchaseCount) {
+                mostPopularItem = itemName;
+                maxPurchaseCount = purchaseCount;
+            }
+        }
+        if (!mostPopularItem.isEmpty()) {
+            purchases.append("\nMost Popular Item: " + mostPopularItem + " with " + maxPurchaseCount + " purchases.");
+        }
+
+        return purchases.toString();
     }
 }
 

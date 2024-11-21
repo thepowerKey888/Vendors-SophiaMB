@@ -56,7 +56,7 @@ public class VendorTest {
     public void buyItemTest(){
         ven.addMoney(5.00);
         ven.select("Ven1", "Candy");
-        System.out.println(ven.getStock("Candy"));
+        System.out.println(ven.getStockOneVendor("Ven1","Candy"));
         System.out.println(ven.getBalance());
         Assertions.assertEquals(4, ven.getStockOneVendor("Ven1","Candy")); //check that stock decreases
         Assertions.assertEquals(3.75, ven.getBalance()); //check that balance was reduced correctly
@@ -108,22 +108,24 @@ public class VendorTest {
      */
     @Test
     public void changeItemNameTest(){
-        String changedName = ven.changeItemName("Candy", "Pudding");
+        String changedName = ven.changeItemName("Ven3","Candy", "Pudding");
+        System.out.println(changedName);
         Assertions.assertEquals("Item name changed", changedName);
-        Assertions.assertEquals(-1, ven.getStock("Candy")); //chek that old name isn't there
-        Assertions.assertEquals(5, ven.getStock("Pudding")); //check new item is there
+        Assertions.assertEquals(-1, ven.getStockOneVendor("Ven3","Candy")); //chek that old name isn't there
+        Assertions.assertEquals(20, ven.getStockOneVendor("Ven3","Pudding")); //check new item is there
+
 
         //try to change name to empty string
-        changedName = ven.changeItemName("Pudding", "");
+        changedName = ven.changeItemName("Ven3","Pudding", "");
         Assertions.assertEquals("New name can't be empty or null", changedName);
 
         //try to change name to an already existing item
-        changedName = ven.changeItemName("Pudding", "Gum");
-        Assertions.assertEquals("An item with the new name already exists", changedName);
+        changedName = ven.changeItemName("Ven3","Pudding", "Gum");
+        Assertions.assertEquals("An item with the new name already exists in the vendor's stock", changedName);
 
         //try to change name of non-existing item
-        changedName = ven.changeItemName("Yummy", "Yucky");
-        Assertions.assertEquals("item to change is not found in stock", changedName);
+        changedName = ven.changeItemName("Ven3","Yummy", "Yucky");
+        Assertions.assertEquals("Item to change is not found in the vendor's stock", changedName);
     }
 
     /*
@@ -161,6 +163,42 @@ public class VendorTest {
         result = ven.removeUnavailableItem("Ven1", "Chilly");
         Assertions.assertEquals("Item not found in vendor's inventory", result);
     }
+
+    /*
+    As a User, I would like the vendor system to track customer purchases for each item,
+    providing insights on popular items and trends.
+     */
+    @Test
+    public void getCustomerPurchasesTest() {
+        // Set up test data by simulating some purchases
+        ven.addMoney(20.00); // Add money to the balance
+        ven.select("Ven1", "Candy"); // Purchase Candy
+        ven.select("Ven1", "Candy"); // Purchase Candy again
+        ven.select("Ven2", "Gum");   // Purchase Gum
+        ven.select("Ven1", "Candy"); // Purchase Candy again
+
+        System.out.println("++++++++");
+        ven.getStockOneVendor("Ven1", "Candy");
+        ven.getStockOneVendor("Ven2", "Gum");
+        // Expected output format:
+        String expectedOutput = "Customer Purchases:\n" +
+                "Candy: 3 times\n" +
+                "Gum: 1 times\n" + "\n" +
+                "Most Popular Item: Candy with 3 purchases.";
+
+        // Call the method to get customer purchases
+        String result = ven.getCustomerPurchases();
+        System.out.println("result");
+        System.out.println(result);
+
+        // Assert that the expected and actual results match
+        Assertions.assertEquals(expectedOutput, result);
+    }
+
+
+
+
+
 
 
 }
