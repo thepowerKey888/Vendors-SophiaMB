@@ -196,9 +196,21 @@ public class VendorTest {
     }
 
 
+    /*
+    As a User, I would like to check an item’s description or details before purchasing, so I
+    can make informed choices on item benefits and uses
+     */
+    @Test
+    void testAddAndGetItemDescription() {
+        ven.addItemDescription("Candy", "A sweet treat made of sugar and chocolate.");
+        ven.addItemDescription("Gum", "Chewy and flavorful gum.");
 
+        Assertions.assertEquals("A sweet treat made of sugar and chocolate.", ven.getDescription("Candy"));
+        Assertions.assertEquals("Chewy and flavorful gum.", ven.getDescription("Gum"));
 
-
+        //try to get a description for an item that doesn't exist
+        Assertions.assertEquals("Description not found.", ven.getDescription("Chips"));
+    }
 
 
 }

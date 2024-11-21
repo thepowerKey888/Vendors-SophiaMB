@@ -8,6 +8,7 @@ import java.util.Map;
  */
 class Vendor {
     private static HashMap<String, Item> Stock = new HashMap<String,Item>();
+    private static HashMap<String, String> itemDescriptions = new HashMap<String,String>();
     private double balance;
     private static HashMap<String, HashMap<String, Item>> vendors = new HashMap<>();
 
@@ -267,6 +268,31 @@ class Vendor {
         }
 
         return purchases.toString();
+    }
+
+    /**
+     * Adds an item description to the itemDescriptions HashMap.
+     * If the item already exists, the description is updated.
+     * @param itemName the name of the item
+     * @param description the description of the item
+     */
+    public void addItemDescription(String itemName, String description) {
+        itemDescriptions.put(itemName, description);
+        System.out.println("Description for item '" + itemName + "' has been added/updated.");
+    }
+
+    /**
+     * Retrieves the description of an item by its name.
+     * If the item does not exist in the itemDescriptions map, it returns a message indicating the item is not found.
+     * @param itemName the name of the item
+     * @return the description of the item, or a message if the item is not found
+     */
+    public String getDescription(String itemName) {
+        if (itemDescriptions.containsKey(itemName)) {
+            return itemDescriptions.get(itemName);
+        } else {
+            return "Description not found.";
+        }
     }
 }
 
