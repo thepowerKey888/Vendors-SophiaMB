@@ -83,7 +83,26 @@ class Vendor {
         }
     }
 
+    /**change name of an item in the stock.
+     * @param curName current name of item
+     * @param newName new name to change
+     */
+    public String changeItemName(String curName, String newName){
+        if(newName == null || newName.trim().isEmpty()){
+            return "New name can't be empty or null";
+        }
+        if(!Stock.containsKey(curName)){
+            return "item to change is not found in stock";
+        }
+        if(Stock.containsKey(newName)){
+            return "An item with the new name already exists";
+        }
 
+        //changes the name
+        Item item = Stock.remove(curName);
+        Stock.put(newName, item);
+        return "Item name changed";
+    }
 }
 
 class Examples {

@@ -70,5 +70,28 @@ public class VendorTest {
 
     }
 
+    /*
+    As a User, I would like to change the Name of an item at a vendor, so it is easy to manage
+    the vendor-available items
+     */
+    @Test
+    public void changeItemNameTest(){
+        String changedName = ven.changeItemName("Candy", "Pudding");
+        Assertions.assertEquals("Item name changed", changedName);
+        Assertions.assertEquals(-1, ven.getStock("Candy")); //chek that old name isn't there
+        Assertions.assertEquals(5, ven.getStock("Pudding")); //check new item is there
+
+        //try to change name to empty string
+        changedName = ven.changeItemName("Pudding", "");
+        Assertions.assertEquals("New name can't be empty or null", changedName);
+
+        //try to change name to an already existing item
+        changedName = ven.changeItemName("Pudding", "Gum");
+        Assertions.assertEquals("An item with the new name already exists", changedName);
+
+        //try to change name of non existing item
+        changedName = ven.changeItemName("Yummy", "Yucky");
+        Assertions.assertEquals("item to change is not found in stock", changedName);
+    }
 
 }
