@@ -55,7 +55,7 @@ public class VendorTest {
     @Test //JUnit test to validate that you can buy an item from a vendor.
     public void buyItemTest(){
         ven.addMoney(5.00);
-        ven.select("Ven1", "Candy");
+        ven.select("Ven1", "Candy", false, false);
         System.out.println(ven.getStockOneVendor("Ven1","Candy"));
         System.out.println(ven.getBalance());
         Assertions.assertEquals(4, ven.getStockOneVendor("Ven1","Candy")); //check that stock decreases
@@ -68,12 +68,12 @@ public class VendorTest {
 
         //buy candy 5 times
         for (int i = 0; i < 5; i++){
-            ven.select("Ven1", "Candy");
+            ven.select("Ven1", "Candy",false, false);
         }
 
         Assertions.assertEquals(0, ven.getStockOneVendor("Ven1","Candy")); //check that stock is empty
 
-        ven.select("Ven1", "Candy");
+        ven.select("Ven1", "Candy",false, false);
         Assertions.assertEquals(0, ven.getStockOneVendor("Ven1","Candy")); //check that stock doesn't decrease bellow 0
     }
 
@@ -97,7 +97,7 @@ public class VendorTest {
 
         //check if you can buy soda
         ven.addMoney(2.00);
-        ven.select("Ven1", "Soda");
+        ven.select("Ven1", "Soda",false, false);
         Assertions.assertEquals(9, ven.getStockOneVendor("Ven1", "Soda")); //check stock decreases after buying it
 
     }
@@ -137,7 +137,7 @@ public class VendorTest {
         //adding money and buying all candy from ven1
         ven.addMoney(10.00);
         for(int i = 0; i < 5; i++){
-            ven.select("Ven1", "Candy");
+            ven.select("Ven1", "Candy",false, false);
         }
 
         //testing the out-of stock items
@@ -172,10 +172,10 @@ public class VendorTest {
     public void getCustomerPurchasesTest() {
         // Set up test data by simulating some purchases
         ven.addMoney(20.00); // Add money to the balance
-        ven.select("Ven1", "Candy"); // Purchase Candy
-        ven.select("Ven1", "Candy"); // Purchase Candy again
-        ven.select("Ven2", "Gum");   // Purchase Gum
-        ven.select("Ven1", "Candy"); // Purchase Candy again
+        ven.select("Ven1", "Candy",false, false); // Purchase Candy
+        ven.select("Ven1", "Candy",false, false); // Purchase Candy again
+        ven.select("Ven2", "Gum",false, false);   // Purchase Gum
+        ven.select("Ven1", "Candy",false, false); // Purchase Candy again
 
         System.out.println("++++++++");
         ven.getStockOneVendor("Ven1", "Candy");
@@ -210,6 +210,22 @@ public class VendorTest {
 
         //try to get a description for an item that doesn't exist
         Assertions.assertEquals("Description not found.", ven.getDescription("Chips"));
+    }
+
+    /*
+    As a User, I would like to apply discounts to specific items or categories within the vendor’s
+    inventory, allowing for seasonal sales or promotions
+     */
+
+    @Test
+    void testApplyDiscounts(){
+        ven.addMoney(5.00);
+        ven.select("Ven4", "Candy",true, false); //buy candy with christmasDiscount
+        ven.select("Ven5", "Candy",false, true); //buy candy with springSale
+
+
+        Assertions.assertEquals(3.25, ven.getBalance() );
+
     }
 
 

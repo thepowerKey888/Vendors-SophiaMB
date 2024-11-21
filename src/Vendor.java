@@ -129,25 +129,45 @@ class Vendor {
 
     /**
      * Attempt to purchase the named item from a vendor. A message is returned if
-     * the balance isn't sufficient to cover the item cost.
+     * the balance isn't sufficient to cover the item cost. Discounts are applied if
+     * the corresponding flags are true (Christmas or Spring Sale).
      *
      * @param itemName The name of the item to purchase ("Candy" or "Gum")
      * @param vendorName The vendor from which to purchase the item
+     * @param christmasDiscount A flag indicating if the Christmas discount applies
+     * @param springSale A flag indicating if the Spring Sale discount applies
      */
-    void select(String vendorName, String itemName) {
+    void select(String vendorName, String itemName, boolean christmasDiscount, boolean springSale) {
         if (vendors.containsKey(vendorName)) {
             HashMap<String, Item> stock = vendors.get(vendorName);
             if (stock.containsKey(itemName)) {
                 Item item = stock.get(itemName);
 
+                double finalPrice = item.price;
+                if (christmasDiscount) {
+                    finalPrice -= 0.50;  //apply a $0.50 discount for Christmas
+                    System.out.println("Christmas discount applied: -$0.50");
+                }
+
+                if (springSale) {
+                    finalPrice -= 0.25;  //apply a $0.25 discount for Spring Sale
+                    System.out.println("Spring Sale discount applied: -$0.25");
+                }
+
+                //check price does not go below zero
+                if (finalPrice < 0) {
+                    finalPrice = 0;
+                }
+
+                //check balance is sufficient
                 if (item.stock <= 0) {
                     System.out.println("Item no longer available");
-                } else if (balance >= item.price) {
+                } else if (balance >= finalPrice) {
                     item.purchase(1);
-                    this.balance = this.balance - item.price;
+                    this.balance = this.balance - finalPrice;
                     System.out.println("Purchased " + itemName + " from " + vendorName);
 
-                    //update allItems hashmap item value
+
                     if (allItems.containsKey(itemName)) {
                         allItems.put(itemName, allItems.get(itemName) + 1);
                     } else {
@@ -157,10 +177,10 @@ class Vendor {
                     System.out.println("Gimme more money");
                 }
             } else {
-                System.out.println("Sorry, vendor doesn't have that item");
+                System.out.println("Sorry, vendor doesn't have that item.");
             }
         } else {
-            System.out.println("Sorry, vendor " + vendorName + " not found");
+            System.out.println("Sorry, vendor " + vendorName + " not found.");
         }
     }
 
@@ -172,34 +192,29 @@ class Vendor {
      * @return a message indicating the result of the operation
      */
     public String changeItemName(String vendorName, String curName, String newName) {
-        // Check if the new name is valid
+        //check if the new name is valid
         if (newName == null || newName.trim().isEmpty()) {
             return "New name can't be empty or null";
         }
-
-        // Check if the vendor exists
+        //check if the vendor exists
         if (!vendors.containsKey(vendorName)) {
             return "Vendor not found";
         }
-
-        // Get the vendor's stock
         HashMap<String, Item> stock = vendors.get(vendorName);
-
-        // Check if the item exists in the vendor's stock
+        //check if the item exists in vendor's stock
         if (!stock.containsKey(curName)) {
             return "Item to change is not found in the vendor's stock";
         }
-
-        // Check if the new name already exists in the vendor's stock
+        //check if new name already exists in  vendor's stock
         if (stock.containsKey(newName)) {
             return "An item with the new name already exists in the vendor's stock";
         }
 
-        // Change the item name in the vendor's stock
+        //change item name
         Item item = stock.remove(curName);
         stock.put(newName, item);
 
-        // Update the allItems map (if needed)
+        //update the allItems map
         if (allItems.containsKey(curName)) {
             Integer value = allItems.remove(curName);
             allItems.put(newName, value);
