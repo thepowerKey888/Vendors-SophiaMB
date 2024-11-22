@@ -19,27 +19,6 @@ public class VendorTest {
         ven.addVendor("Ven5", 30, 4);
 
     }
-    /*
-    As a User, I would like for the vendor system to manage and print the inventory of 5
-    different vendors so that I can have multiple vendors available
-     */
-    @Test void testVendorInventory(){
-
-        //check stock of ven1
-        Assertions.assertEquals(5, ven.getStockOneVendor("Ven1", "Candy"));
-        Assertions.assertEquals(10, ven.getStockOneVendor("Ven1", "Gum"));
-
-        //restock Ven1 candy
-        ven.restockItems("Ven1", "Candy", 10);
-        Assertions.assertEquals(15, ven.getStockOneVendor("Ven1", "Candy"));
-
-        //check stock of Ven2
-        Assertions.assertEquals(8, ven.getStockOneVendor("Ven2", "Candy"));
-        Assertions.assertEquals(15, ven.getStockOneVendor("Ven2", "Gum"));
-
-        //print all inventories
-        ven.printAllInventories();
-    }
 
     @Test
     void addition() {
@@ -48,40 +27,87 @@ public class VendorTest {
 
     @Test //JUnit test case to validate that you can add money to a vendor
     public void addMoneyTest(){
+        System.out.println();
+        System.out.println("addMoneyTest Executed!");
+
         ven.addMoney(10);
         Assertions.assertEquals(10, ven.getBalance());
+
     }
 
     @Test //JUnit test to validate that you can buy an item from a vendor.
     public void buyItemTest(){
+        System.out.println();
+        System.out.println("buyItemTest Executed!");
+
         ven.addMoney(5.00);
-        ven.select("Ven1", "Candy", false, false);
-        System.out.println(ven.getStockOneVendor("Ven1","Candy"));
-        System.out.println(ven.getBalance());
+        ven.select("Ven1", "Candy", "");
         Assertions.assertEquals(4, ven.getStockOneVendor("Ven1","Candy")); //check that stock decreases
         Assertions.assertEquals(3.75, ven.getBalance()); //check that balance was reduced correctly
     }
 
     @Test //Unit test to validate that you can empty the vendor’s inventory.
     public void emptyVendorInventoryTest(){
+
+        System.out.println();
+        System.out.println("emptyVendorInventoryTest Executed!");
+
         ven.addMoney(10.00);
 
         //buy candy 5 times
         for (int i = 0; i < 5; i++){
-            ven.select("Ven1", "Candy",false, false);
+            ven.select("Ven1", "Candy", "");
         }
-
+        //System.out.println("Check that stock is empty:");
         Assertions.assertEquals(0, ven.getStockOneVendor("Ven1","Candy")); //check that stock is empty
-
-        ven.select("Ven1", "Candy",false, false);
+        ven.select("Ven1", "Candy", "");
         Assertions.assertEquals(0, ven.getStockOneVendor("Ven1","Candy")); //check that stock doesn't decrease bellow 0
     }
 
+
     @Test //As a User, I would like to restock items on a vendor so players can buy from him later
     public void restockTest(){
+        System.out.println();
+        System.out.println("restockTest Executed!");
 
         ven.restockItems("Ven1","Candy",  10);
         Assertions.assertEquals(15, ven.getStockOneVendor("Ven1","Candy"));
+
+        ven.restockItems("Ven5","Marshmellow",  10);
+        Assertions.assertEquals(10, ven.getStockOneVendor("Ven5","Marshmellow"));
+
+    }
+
+    /*
+    As a User, I would like for the vendor system to manage and print the inventory of 5
+    different vendors so that I can have multiple vendors available
+     */
+    @Test void testVendorInventory(){
+        System.out.println();
+        System.out.println("testVendorInventory Executed!");
+
+        //check stock of ven1
+        Assertions.assertEquals(5, ven.getStockOneVendor("Ven1", "Candy"));
+        Assertions.assertEquals(10, ven.getStockOneVendor("Ven1", "Gum"));
+
+        //check stock of Ven2
+        Assertions.assertEquals(8, ven.getStockOneVendor("Ven2", "Candy"));
+        Assertions.assertEquals(15, ven.getStockOneVendor("Ven2", "Gum"));
+
+        //check stock of Ven3
+        Assertions.assertEquals(20, ven.getStockOneVendor("Ven3", "Candy"));
+        Assertions.assertEquals(5, ven.getStockOneVendor("Ven3", "Gum"));
+
+        //check stock of Ven4
+        Assertions.assertEquals(18, ven.getStockOneVendor("Ven4", "Candy"));
+        Assertions.assertEquals(1, ven.getStockOneVendor("Ven4", "Gum"));
+
+        //check stock of Ven5
+        Assertions.assertEquals(30, ven.getStockOneVendor("Ven5", "Candy"));
+        Assertions.assertEquals(4, ven.getStockOneVendor("Ven5", "Gum"));
+
+        //print all inventories
+        ven.printAllInventories();
     }
 
     /*
@@ -90,15 +116,47 @@ public class VendorTest {
      */
     @Test
     public void addItemsToVendorInventoryTest(){
+        System.out.println();
+        System.out.println("addItemsToVendorInventoryTest Executed!");
+
         Assertions.assertEquals(-1, ven.getStockOneVendor("Ven1", "Soda")); //soda isn't in inventory
-        ven.restockItems("Ven1", "Soda",  10); //restocknew item
-        System.out.println(ven.getStockOneVendor("Ven1","Soda"));
+        ven.restockItems("Ven1", "Soda",  10); //restock new item
         Assertions.assertEquals(10, ven.getStockOneVendor("Ven1","Soda"));
 
-        //check if you can buy soda
-        ven.addMoney(2.00);
-        ven.select("Ven1", "Soda",false, false);
+        Assertions.assertEquals(-1, ven.getStockOneVendor("Ven2", "Milk")); //soda isn't in inventory
+        ven.restockItems("Ven2", "Milk",  10); //restock new item
+        Assertions.assertEquals(10, ven.getStockOneVendor("Ven2","Milk"));
+
+        Assertions.assertEquals(-1, ven.getStockOneVendor("Ven3", "Cheese")); //soda isn't in inventory
+        ven.restockItems("Ven3", "Cheese",  10); //restock new item
+        Assertions.assertEquals(10, ven.getStockOneVendor("Ven3","Cheese"));
+
+        Assertions.assertEquals(-1, ven.getStockOneVendor("Ven4", "Ice Cream")); //soda isn't in inventory
+        ven.restockItems("Ven4", "Ice Cream",  10); //restock new item
+        Assertions.assertEquals(10, ven.getStockOneVendor("Ven4","Ice Cream"));
+
+        Assertions.assertEquals(-1, ven.getStockOneVendor("Ven5", "Jello")); //soda isn't in inventory
+        ven.restockItems("Ven5", "Jello",  10); //restock new item
+        Assertions.assertEquals(10, ven.getStockOneVendor("Ven5","Jello"));
+
+        System.out.println();
+        //check if you can buy the added items
+        ven.addMoney(20.00);
+
+        ven.select("Ven1", "Soda", "");
         Assertions.assertEquals(9, ven.getStockOneVendor("Ven1", "Soda")); //check stock decreases after buying it
+
+        ven.select("Ven2", "Milk", "");
+        Assertions.assertEquals(9, ven.getStockOneVendor("Ven2", "Milk")); //check stock decreases after buying it
+
+        ven.select("Ven3", "Cheese", "");
+        Assertions.assertEquals(9, ven.getStockOneVendor("Ven3", "Cheese")); //check stock decreases after buying it
+
+        ven.select("Ven4", "Ice Cream", "");
+        Assertions.assertEquals(9, ven.getStockOneVendor("Ven4", "Ice Cream")); //check stock decreases after buying it
+
+        ven.select("Ven5", "Jello", "");
+        Assertions.assertEquals(9, ven.getStockOneVendor("Ven5", "Jello")); //check stock decreases after buying it
 
     }
 
@@ -108,8 +166,10 @@ public class VendorTest {
      */
     @Test
     public void changeItemNameTest(){
+        System.out.println();
+        System.out.println("changeItemNameTest Executed!");
+
         String changedName = ven.changeItemName("Ven3","Candy", "Pudding");
-        System.out.println(changedName);
         Assertions.assertEquals("Item name changed", changedName);
         Assertions.assertEquals(-1, ven.getStockOneVendor("Ven3","Candy")); //chek that old name isn't there
         Assertions.assertEquals(20, ven.getStockOneVendor("Ven3","Pudding")); //check new item is there
@@ -134,16 +194,17 @@ public class VendorTest {
      */
     @Test
     public void removeUnavailableItemTest(){
+        System.out.println();
+        System.out.println("removeUnavailableItemTest Executed!");
+
         //adding money and buying all candy from ven1
         ven.addMoney(10.00);
         for(int i = 0; i < 5; i++){
-            ven.select("Ven1", "Candy",false, false);
+            ven.select("Ven1", "Candy", "");
         }
 
         //testing the out-of stock items
          String result = ven.removeUnavailableItem("Ven1", "Candy");
-        System.out.println(ven.getStockOneVendor("Ven1", "Candy"));
-         System.out.println(result);
          Assertions.assertEquals("Item removed from vendor's inventory", result);
          Assertions.assertEquals(-1, ven.getStockOneVendor("Ven1", "Candy")); //check item isn't in inventory
 
@@ -170,28 +231,31 @@ public class VendorTest {
      */
     @Test
     public void getCustomerPurchasesTest() {
+        System.out.println();
+        System.out.println("getCustomerPurchasesTest Executed!");
+
         // Set up test data by simulating some purchases
         ven.addMoney(20.00); // Add money to the balance
-        ven.select("Ven1", "Candy",false, false); // Purchase Candy
-        ven.select("Ven1", "Candy",false, false); // Purchase Candy again
-        ven.select("Ven2", "Gum",false, false);   // Purchase Gum
-        ven.select("Ven1", "Candy",false, false); // Purchase Candy again
+        ven.select("Ven1", "Candy", ""); // Purchase Candy
+        ven.select("Ven1", "Candy", ""); // Purchase Candy again
+        ven.select("Ven2", "Gum", "");   // Purchase Gum
+        ven.select("Ven1", "Candy", ""); // Purchase Candy again
 
-        System.out.println("++++++++");
         ven.getStockOneVendor("Ven1", "Candy");
         ven.getStockOneVendor("Ven2", "Gum");
-        // Expected output format:
-        String expectedOutput = "Customer Purchases:\n" +
-                "Candy: 3 times\n" +
-                "Gum: 1 times\n" + "\n" +
-                "Most Popular Item: Candy with 3 purchases.";
 
-        // Call the method to get customer purchases
+        System.out.println();
+
+        String expectedOutput = "   - Customer Purchases:\n" +
+                "      - Candy: 3 times\n" +
+                "      - Gum: 1 times\n" +
+                "\n   - Most Popular Item: Candy with 3 purchases.\n" +
+                "\n   - Trending Items:\n" +
+                "      - Candy (3 purchases)\n" +
+                "      - Gum (1 purchases)\n";
+
         String result = ven.getCustomerPurchases();
-        System.out.println("result");
         System.out.println(result);
-
-        // Assert that the expected and actual results match
         Assertions.assertEquals(expectedOutput, result);
     }
 
@@ -202,6 +266,8 @@ public class VendorTest {
      */
     @Test
     void testAddAndGetItemDescription() {
+        System.out.println();
+        System.out.println("testAddAndGetItemDescription Executed!");
         ven.addItemDescription("Candy", "A sweet treat made of sugar and chocolate.");
         ven.addItemDescription("Gum", "Chewy and flavorful gum.");
 
@@ -216,17 +282,22 @@ public class VendorTest {
     As a User, I would like to apply discounts to specific items or categories within the vendor’s
     inventory, allowing for seasonal sales or promotions
      */
-
     @Test
     void testApplyDiscounts(){
-        ven.addMoney(5.00);
-        ven.select("Ven4", "Candy",true, false); //buy candy with christmasDiscount
-        ven.select("Ven5", "Candy",false, true); //buy candy with springSale
+        System.out.println();
+        System.out.println("testApplyDiscounts Executed!");
 
+        ven.addMoney(2.00);
+        ven.select("Ven1", "Candy", "christmasSpecial");
+        assertEquals(1.06, ven.getBalance());
 
-        Assertions.assertEquals(3.25, ven.getBalance() );
 
     }
+//
+//    /*
+//    As a User, I would like for certain items to be marked as ”bestsellers” in the vendor’s
+//    inventory, enabling quicker access to commonly purchased items
+//     */
 
 
 }
