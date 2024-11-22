@@ -73,20 +73,28 @@ class Vendor {
 
     /**
      * Prints the inventory of all vendors and records the items each vendor has in stock.
+     * Also determines bestseller
      */
-    public void printAllInventories(){
+    public void printAllInventories() {
+        int bestsellerThreshold = 5;
 
-        //loop through vendors
-        for(String vendorName : vendors.keySet()){
+
+        for (String vendorName : vendors.keySet()) {
             System.out.println("   - Vendor: " + vendorName);
             HashMap<String, Item> stock = vendors.get(vendorName);
 
-            //add items to hashmap
-            for(String itemName : stock.keySet()){
 
-                System.out.println("      "+itemName + " stock: " + stock.get(itemName).stock);
+            for (String itemName : stock.keySet()) {
+                int purchaseCount = allItems.getOrDefault(itemName, 0); // Get purchase count from allItems
+                String itemInfo = "      " + itemName + " stock: " + stock.get(itemName).stock;
+
+                //check if bestseller
+                if (purchaseCount >= bestsellerThreshold) {
+                    itemInfo += " (Bestseller)";
+                }
+
+                System.out.println(itemInfo);
             }
-            //System.out.println("");
         }
     }
 
@@ -145,7 +153,7 @@ class Vendor {
 
                 double finalPrice = item.price;
 
-                // Apply discount if a valid discount name is provided
+                //apply discount if valid
                 if (!discountName.isEmpty() && discounts.containsKey(discountName)) {
                     double discountPercentage = discounts.get(discountName);
                     finalPrice -= (finalPrice * discountPercentage / 100);
@@ -157,10 +165,9 @@ class Vendor {
                     System.out.println("   - Invalid discount name: No discount applied.");
                 }
 
-                // Ensure price does not go below zero
-                finalPrice = Math.max(finalPrice, 0);
+                finalPrice = Math.max(finalPrice, 0); //check price doesn't go bellow 0
 
-                // Check if item is available and balance is sufficient
+                //check item is available and balance is sufficient
                 if (item.stock <= 0) {
                     System.out.println("   - Item no longer available");
                 } else if (balance >= finalPrice) {
@@ -168,7 +175,6 @@ class Vendor {
                     this.balance -= finalPrice;
                     System.out.println("   - Purchased " + itemName + " from " + vendorName);
 
-                    // Update purchase count in allItems map
                     allItems.put(itemName, allItems.getOrDefault(itemName, 0) + 1);
                 } else {
                     System.out.println("Gimme more money");
@@ -272,48 +278,56 @@ class Vendor {
      * @return A string representing the customer purchases and their counts, along with the most popular item
      */
     public String getCustomerPurchases() {
-        //loop through all vendors and collect all items from their stock
+        int bestsellerThreshold = 5;
+
+        //get items from vendors
         for (String vendorName : vendors.keySet()) {
             HashMap<String, Item> stock = vendors.get(vendorName);
 
-            //add items to the allItems map if not already present
+            //add items to allItems
             for (String itemName : stock.keySet()) {
-                allItems.putIfAbsent(itemName, 0); //add item with value 0 if not there
+                allItems.putIfAbsent(itemName, 0); // Add item with value 0 if not present
             }
         }
 
         StringBuilder purchases = new StringBuilder("   - Customer Purchases:\n");
         List<Map.Entry<String, Integer>> sortedItems = new ArrayList<>(allItems.entrySet());
-        //sort items by purchase count in descending order
+
         sortedItems.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue).reversed());
 
         String mostPopularItem = "";
         int maxPurchaseCount = 0;
 
-        // Loop through sorted items to display purchase counts
         for (Map.Entry<String, Integer> entry : sortedItems) {
             String itemName = entry.getKey();
             Integer purchaseCount = entry.getValue();
-            purchases.append("      - " +itemName).append(": ").append(purchaseCount).append(" times\n");
 
+            //bestseller if the purchase count exceeds the threshold
+            if (purchaseCount >= bestsellerThreshold) {
+                purchases.append("      - " + itemName).append(": ").append(purchaseCount).append(" times (Bestseller)\n");
+            } else {
+                purchases.append("      - " + itemName).append(": ").append(purchaseCount).append(" times\n");
+            }
+
+            //track most popular item
             if (purchaseCount > maxPurchaseCount) {
                 mostPopularItem = itemName;
                 maxPurchaseCount = purchaseCount;
             }
         }
 
-        // Add the most popular item to the result
+
         if (!mostPopularItem.isEmpty()) {
             purchases.append("\n   - Most Popular Item: ").append(mostPopularItem).append(" with ").append(maxPurchaseCount).append(" purchases.\n");
         }
 
-        // Handle top 3 trending items
-        int topN = Math.min(3, sortedItems.size()); // Get up to top 3 items, or fewer if less than 3 items
+        //top 3 trending items
+        int topN = Math.min(3, sortedItems.size());
         if (topN > 0) {
             purchases.append("\n   - Trending Items:\n");
             for (int i = 0; i < topN; i++) {
                 Map.Entry<String, Integer> trendingItem = sortedItems.get(i);
-                purchases.append("      - "+trendingItem.getKey()).append(" (").append(trendingItem.getValue()).append(" purchases)\n");
+                purchases.append("      - ").append(trendingItem.getKey()).append(" (").append(trendingItem.getValue()).append(" purchases)\n");
             }
         } else {
             purchases.append("   - No items available to display.\n");
@@ -352,18 +366,13 @@ class Vendor {
 
     public void getDiscounts() {
 
-
-        // Add 3 seasonal discounts
         discounts.put("christmasSpecial", 25.0);
         discounts.put("springSale", 15.0);
         discounts.put("summerClearance", 20.0);
-
-        // Add 3 promotional discounts
         discounts.put("happyBirthdayDeal", 10.0);
         discounts.put("loyaltyReward", 5.0);
         discounts.put("newCustomerBonus", 30.0);
 
-        // Print the discounts
         System.out.println("Available Discounts:");
         for (Map.Entry<String, Double> discount : discounts.entrySet()) {
             System.out.println("   - " + discount.getKey() + ": " + discount.getValue() + "% off");

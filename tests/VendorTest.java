@@ -293,11 +293,38 @@ public class VendorTest {
 
 
     }
-//
-//    /*
-//    As a User, I would like for certain items to be marked as ”bestsellers” in the vendor’s
-//    inventory, enabling quicker access to commonly purchased items
-//     */
+
+    /*
+    As a User, I would like for certain items to be marked as ”bestsellers” in the vendor’s
+    inventory, enabling quicker access to commonly purchased items
+     */
+    @Test
+    void testBestSeller(){
+        System.out.println();
+        System.out.println("testBestSeller Executed!");
+
+        ven.addMoney(10.00);
+        System.out.println(ven.getStockOneVendor("Ven1", "Candy" ));
+        for (int i = 0; i < 5; i++) {
+            ven.select("Ven1", "Candy", "");
+        }
+
+        //check that stock is empty
+        Assertions.assertEquals(0, ven.getStockOneVendor("Ven1", "Candy" ));
+
+        String actual_output = ven.getCustomerPurchases();
+
+
+        String expectedOutput = "   - Customer Purchases:\n" +
+                "      - Candy: 5 times (Bestseller)\n" +
+                "      - Gum: 0 times\n" + "\n" +
+                "   - Most Popular Item: Candy with 5 purchases.\n" + "\n" +
+                "   - Trending Items:\n" +
+                "      - Candy (5 purchases)\n" +
+                "      - Gum (0 purchases)\n";
+
+        Assertions.assertEquals(expectedOutput, actual_output);
+    }
 
 
 }
